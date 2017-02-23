@@ -14,7 +14,8 @@ class Rainbow(object):
     endc = '\033[0m'
 
 class DatabaseHelper(object):
-
+    """Convenience methods for our database. Should probably be in models.py, but not tonight."""
+    
     @classmethod
     def clear_token(cls, human):
         human.access_token = ""

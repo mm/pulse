@@ -5,7 +5,7 @@ from oauthlib.oauth2 import MobileApplicationClient
 
 class FitbitClient(object):
 
-	def __init__(self, client_id, client_secret, token, scope=["activity", "heartrate", "location", "nutrition", "profile", "settings", "sleep", "social", "weight"]):
+	def __init__(self, client_id, token, scope=["activity", "heartrate", "location", "nutrition", "profile", "settings", "sleep", "social", "weight"]):
 		"""Initializes the Fibit client. Specify the client_id and client_secret if you're creating a token for the first time. Otherwise, pass in the token.
 		The class automatically asks for a full scope. You can change this by passing in a list with your desired scope.
 		
@@ -20,7 +20,7 @@ class FitbitClient(object):
 			# We need to fetch a token for the user.
 			print("Note: no token was passed in.")
 
-			self.client = MobileApplicationClient(client_id, client_secret=client_secret)
+			self.client = MobileApplicationClient(client_id)
 			self.fitbit = OAuth2Session(client_id, client=self.client, scope=scope)
 
 			authorization_base_url = "https://www.fitbit.com/oauth2/authorize"
@@ -38,7 +38,7 @@ class FitbitClient(object):
 
 		else:
 			# We've got an access token, and we'll use it.
-			self.client = MobileApplicationClient(client_id, client_secret=client_secret)
+			self.client = MobileApplicationClient(client_id)
 			self.fitbit = OAuth2Session(client_id, client=self.client, scope=scope, token=token)
 			self.token = token['access_token']
 

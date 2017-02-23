@@ -5,12 +5,11 @@ import requests
 import os
 
 client_id = os.environ["FITBIT_CLIENT_ID"]
-client_secret = os.environ["FITBIT_CLIENT_SECRET"]
 
 # Open up the database
 models.initialize()
 
-# See if we exist yet... Create me if I don't.
+# See if I exist yet... Create me if I don't.
 try:
 	human = models.Human.select().where(models.Human.name == "Matthew Mascioni").get()
 except models.DoesNotExist:
@@ -19,7 +18,7 @@ except models.DoesNotExist:
 
 # Set up a new instance for our Fitbit client.
 
-fitbit_client = FitbitClient(client_id=client_id, client_secret=client_secret, token={'token_type': 'Bearer', 'access_token': human.access_token})
+fitbit_client = FitbitClient(client_id=client_id, token={'token_type': 'Bearer', 'access_token': human.access_token})
 
 if not human.access_token:
 	# We save the token our client just generated.
