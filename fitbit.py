@@ -2,6 +2,7 @@
 import requests
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import MobileApplicationClient
+from helper import Rainbow
 
 class FitbitClient(object):
 
@@ -14,7 +15,7 @@ class FitbitClient(object):
 
 		"""
 		
-		print("Access token passed in: {}".format(token['access_token']))
+		print((Rainbow.purple+"Access token passed in: {}"+Rainbow.endc).format(token['access_token']))
 
 		if token['access_token'] == "":
 			# We need to fetch a token for the user.
