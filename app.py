@@ -1,8 +1,8 @@
 from fitbit import FitbitClient
 from helper import Rainbow, DatabaseHelper
-import models
+import models, exceptions
 import requests
-import os
+import os, datetime
 
 client_id = os.environ["FITBIT_CLIENT_ID"]
 
@@ -25,19 +25,10 @@ if not human.access_token:
 	human.access_token = fitbit_client.token
 	human.save()
 
-r = fitbit_client.fitbit.get('https://api.fitbit.com/1/user/-/activities/heart/date/2017-02-22/1d/1min.json')
-
 try:
-	response_dictionary = r.json()
-except ValueError:
-	print("Response wasn't valid JSON.")
+	summ, intraday = fitbit_client.fetch_heartrate_intraday(date=datetime.date(year=2017, month=2, day=25))
+except (exceptions.InputError, ValueError):
+	pass
 
-summary = {'date': response_dictionary['activities-heart'][0]['dateTime'],
-			'resting_rate': response_dictionary['activities-heart'][0]['value']['restingHeartRate']}
-
-print(summary)
-
-intraday_access = response_dictionary['activities-heart-intraday']['dataset']
-
-for sample in intraday_access:
+for sample in intraday:
 	print("{} \t{}".format(sample['time'], sample['value']))

@@ -3,6 +3,9 @@ import requests
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import MobileApplicationClient
 from helper import Rainbow
+import exceptions
+
+import datetime
 
 class FitbitClient(object):
 
@@ -42,5 +45,43 @@ class FitbitClient(object):
 			self.client = MobileApplicationClient(client_id)
 			self.fitbit = OAuth2Session(client_id, client=self.client, scope=scope, token=token)
 			self.token = token['access_token']
+
+
+	def fetch_heartrate_intraday(self, date=datetime.date.today(), detail='1min'):
+		"""Implementation of: https://dev.fitbit.com/docs/heart-rate/#get-heart-rate-intraday-time-series
+
+		Note: Your application needs to be of the 'Personal' type in order to access this.
+		By default, this will fetch intraday series data for the current day, with a detail level of 1 min, for the entire day.
+		You can pass '1sec' or '1min' to the detail argument."""
+
+		if detail not in ['1min', '1sec']:
+			print("You can only pass in '1min' or '1sec' as the detail argument. Leave blank for minute detail.")
+			raise InputError
+			
+		date_to_pass = date.strftime('%Y-%m-%d')
+		# time_start = start.strftime('%H:%M')
+		# time_end = end.strftime('%H:%M')
+
+		# print("Parameters: {} {} {} {}".format(date_to_pass, detail, time_start, time_end))
+
+		request = self.fitbit.get('https://api.fitbit.com/1/user/-/activities/heart/date/{}/1d/{}.json'.format(date_to_pass, detail))
+
+		try:
+			response_dictionary = request.json()
+
+			print(response_dictionary)
+
+			summary = {'date': response_dictionary['activities-heart'][0]['dateTime'],
+						'resting_rate': response_dictionary['activities-heart'][0]['value']['restingHeartRate']}
+
+			intraday_series = response_dictionary['activities-heart-intraday']['dataset']
+
+			return summary, intraday_series
+
+		except ValueError:
+			print("Response wasn't valid JSON.")
+
+
+		
 
 
