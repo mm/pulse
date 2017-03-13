@@ -21,6 +21,7 @@ class Day(Model):
 
 	@classmethod
 	def create_day(cls, human, date, resting_rate):
+		print("Attempting to create.")
 		try:
 			with DATABASE.atomic():
 				cls.create(

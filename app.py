@@ -28,27 +28,40 @@ if not human.access_token:
 def string_to_datetime(string, type):
 	if type == 'time':
 		return datetime.datetime.strptime(string, '%H:%M:%S')
-	if type == 'date':
+	elif type == 'date':
 		return datetime.datetime.strptime(string, '%Y-%m-%d')
 
 def sync_day_to_database(date=datetime.datetime.now()):
 	try:
-		summ, intraday = fitbit_client.fetch_heartrate_detailed_day(date=datetime.date(year=2017, month=2, day=25))
+		summ, intraday = fitbit_client.fetch_heartrate_detailed_day(date=date)
 	except (exceptions.InputError, ValueError):
-		pass
+		print("An error occured when fetching.")
 
-	# Add a new day to our database
-	day = models.Day.create_day(human, string_to_datetime(summ['date'], 'date'), summ['resting_rate'])
+	print(summ)
 
-	# Prepare to bulk insert heart rates, and associate them with that day
+	#Add a new day to our database
+	try:
+		date_to_pass = string_to_datetime(summ['date'], 'date')
+		models.Day.create_day(human, date_to_pass, summ['resting_rate'])
+	except IntegrityError:
+		print("Error occured when saving.")
+
+	print(day)
+
+	retr = (models.Day.select().where(models.Day.date == date_to_pass)).get()
+	print(retr.resting_hr)
+
+	#Prepare to bulk insert heart rates, by changing all time strings Fitbit returns to datetime objects
 	for sample in intraday:
 		sample['time'] = string_to_datetime(sample['time'], 'time')
-		sample['day'] = day
+		sample['day'] = retr
 
-	# Bulk-insert heart rates for that day
+	#Bulk-insert heart rates for that day
 	models.HeartRate.import_rates(intraday)
 
-retrieved_day = (models.Day.select().where(models.Day.date == datetime.datetime(year=2017, month=2, day=25))).get()
+#sync_day_to_database(datetime.date(year=2017, month=2, day=21))
+
+retrieved_day = (models.Day.select().where(models.Day.date == datetime.datetime(year=2017, month=2, day=21))).get()
 
 for rate in retrieved_day.heart_rate_samples:
 	print("{} \t {}".format(rate.time, rate.value))
