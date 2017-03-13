@@ -27,9 +27,9 @@ if not human.access_token:
 
 def string_to_datetime(string, type):
 	if type == 'time':
-		return datetime.datetime.strptime(time_to_format, '%H:%M:%S')
+		return datetime.datetime.strptime(string, '%H:%M:%S')
 	if type == 'date':
-		return datetime.datetime.strptime(summ['date'], '%Y-%m-%d')
+		return datetime.datetime.strptime(string, '%Y-%m-%d')
 
 def sync_day_to_database(date=datetime.datetime.now()):
 	try:
@@ -38,11 +38,11 @@ def sync_day_to_database(date=datetime.datetime.now()):
 		pass
 
 	# Add a new day to our database
-	day = models.Day.create_day(human, date_to_pass, summ['resting_rate'])
+	day = models.Day.create_day(human, string_to_datetime(summ['date'], 'date'), summ['resting_rate'])
 
 	# Prepare to bulk insert heart rates, and associate them with that day
 	for sample in intraday:
-		sample['time'] = format_timevalue(sample['time'])
+		sample['time'] = string_to_datetime(sample['time'], 'time')
 		sample['day'] = day
 
 	# Bulk-insert heart rates for that day
