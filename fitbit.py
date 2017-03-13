@@ -47,7 +47,7 @@ class FitbitClient(object):
 			self.token = token['access_token']
 
 
-	def fetch_heartrate_intraday(self, date=datetime.date.today(), detail='1min'):
+	def fetch_heartrate_detailed_day(self, date=datetime.date.today(), detail='1min'):
 		"""Implementation of: https://dev.fitbit.com/docs/heart-rate/#get-heart-rate-intraday-time-series
 
 		Note: Your application needs to be of the 'Personal' type in order to access this.
@@ -68,8 +68,6 @@ class FitbitClient(object):
 
 		try:
 			response_dictionary = request.json()
-
-			print(response_dictionary)
 
 			summary = {'date': response_dictionary['activities-heart'][0]['dateTime'],
 						'resting_rate': response_dictionary['activities-heart'][0]['value']['restingHeartRate']}

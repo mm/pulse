@@ -25,10 +25,32 @@ if not human.access_token:
 	human.access_token = fitbit_client.token
 	human.save()
 
-try:
-	summ, intraday = fitbit_client.fetch_heartrate_intraday(date=datetime.date(year=2017, month=2, day=25))
-except (exceptions.InputError, ValueError):
-	pass
+def string_to_datetime(string, type):
+	if type == 'time':
+		return datetime.datetime.strptime(time_to_format, '%H:%M:%S')
+	if type == 'date':
+		return datetime.datetime.strptime(summ['date'], '%Y-%m-%d')
 
-for sample in intraday:
-	print("{} \t{}".format(sample['time'], sample['value']))
+def sync_day_to_database(date=datetime.datetime.now()):
+	try:
+		summ, intraday = fitbit_client.fetch_heartrate_detailed_day(date=datetime.date(year=2017, month=2, day=25))
+	except (exceptions.InputError, ValueError):
+		pass
+
+	# Add a new day to our database
+	day = models.Day.create_day(human, date_to_pass, summ['resting_rate'])
+
+	# Prepare to bulk insert heart rates, and associate them with that day
+	for sample in intraday:
+		sample['time'] = format_timevalue(sample['time'])
+		sample['day'] = day
+
+	# Bulk-insert heart rates for that day
+	models.HeartRate.import_rates(intraday)
+
+retrieved_day = (models.Day.select().where(models.Day.date == datetime.datetime(year=2017, month=2, day=25))).get()
+
+for rate in retrieved_day.heart_rate_samples:
+	print("{} \t {}".format(rate.time, rate.value))
+
+
