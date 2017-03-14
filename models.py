@@ -11,17 +11,19 @@ class Human(Model):
 		self.access_token = ""
 		self.save()
 
+	def get_recorded_days(self):
+		return Day.select().where(Day.human == self)
+
 	class Meta:
 		database=DATABASE
 
 class Day(Model):
 	human = ForeignKeyField(Human, related_name='day_summary')
-	date = DateField(default=datetime.date.today)
+	date = DateField(default=datetime.date.today, unique=True)
 	resting_hr = IntegerField()
 
 	@classmethod
 	def create_day(cls, human, date, resting_rate):
-		print("Attempting to create.")
 		try:
 			with DATABASE.atomic():
 				cls.create(
@@ -40,16 +42,24 @@ class Day(Model):
 		except ValueError:
 			pass
 
+	@classmethod
+	def get_day(cls, date=datetime.datetime.today()):
+		return (Day.select().where(Day.date == date)).get()
+
+	def get_heart_rate_data(self):
+		return HeartRate.select().where(HeartRate.day == self)
+
 	class Meta:
-		database=DATABASE
+		database = DATABASE
+		order_by = ('-date',)
 
 class HeartRate(Model):
-	day = ForeignKeyField(Day, related_name='heart_rate_samples')
-	time = TimeField()
+	day = ForeignKeyField(Day, related_name='heart_rate_samples', on_delete='CASCADE')
+	time = DateTimeField(unique=True)
 	value = IntegerField()
 
 	@classmethod
-	def import_rates(cls, bulk):
+	def import_rates(cls, day_to_assign, bulk):
 		with DATABASE.atomic():
 			for data_dict in bulk:
 				cls.create(**data_dict)
@@ -61,3 +71,7 @@ def initialize():
 	DATABASE.connect()
 	DATABASE.create_tables([Human, Day, HeartRate], safe=True)
 	DATABASE.close()
+
+def reset_days():
+	DATABASE.drop_tables([Day, HeartRate])
+	print("Day and heart rate tables dropped.")

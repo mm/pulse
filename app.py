@@ -1,5 +1,5 @@
 from fitbit import FitbitClient
-from helper import Rainbow, DatabaseHelper
+from helper import Rainbow, Helper
 import models, exceptions
 import requests
 import os, datetime
@@ -25,45 +25,43 @@ if not human.access_token:
 	human.access_token = fitbit_client.token
 	human.save()
 
-def string_to_datetime(string, type):
-	if type == 'time':
-		return datetime.datetime.strptime(string, '%H:%M:%S')
-	elif type == 'date':
-		return datetime.datetime.strptime(string, '%Y-%m-%d')
-
 def sync_day_to_database(date=datetime.datetime.now()):
+	# Grab a summary of the day, with heart rate data, from Fitbit
 	try:
 		summ, intraday = fitbit_client.fetch_heartrate_detailed_day(date=date)
 	except (exceptions.InputError, ValueError):
 		print("An error occured when fetching.")
 
-	print(summ)
+	# Add a new day to our database
+	date_to_pass = Helper.string_to_datetime(summ['date'], 'date')
+	models.Day.create_day(human, date_to_pass, summ['resting_rate'])
 
-	#Add a new day to our database
-	try:
-		date_to_pass = string_to_datetime(summ['date'], 'date')
-		models.Day.create_day(human, date_to_pass, summ['resting_rate'])
-	except IntegrityError:
-		print("Error occured when saving.")
-
-	print(day)
-
+	# Retrieve the day we added, and we'll associate this with heart rates later on.
 	retr = (models.Day.select().where(models.Day.date == date_to_pass)).get()
-	print(retr.resting_hr)
 
-	#Prepare to bulk insert heart rates, by changing all time strings Fitbit returns to datetime objects
-	for sample in intraday:
-		sample['time'] = string_to_datetime(sample['time'], 'time')
-		sample['day'] = retr
+	import_or_update_rates(retr, intraday)
 
-	#Bulk-insert heart rates for that day
-	models.HeartRate.import_rates(intraday)
+def import_or_update_rates(day, intraday_summary):
 
-#sync_day_to_database(datetime.date(year=2017, month=2, day=21))
+	for sample in intraday_summary:
+			sample['time'] = datetime.datetime.combine(day.date, Helper.string_to_datetime(sample['time'], 'time'))
+			sample['day'] = day
 
-retrieved_day = (models.Day.select().where(models.Day.date == datetime.datetime(year=2017, month=2, day=21))).get()
+	if day.heart_rate_samples.count() == 0:
+		print("No heart rate samples, currently. Importing all of them.")
+		models.HeartRate.import_rates(day, intraday_summary)
+	else:
+		print("We already have some heart rate values in place. Excluding some from our dataset.")
+		exclusions = [hr.time for hr in day.heart_rate_samples]
+		delta = list(filter(lambda x: x['time'] not in exclusions, intraday_summary))
 
-for rate in retrieved_day.heart_rate_samples:
-	print("{} \t {}".format(rate.time, rate.value))
+		models.HeartRate.import_rates(day, delta)
+
+# sync_day_to_database(date=datetime.datetime(year=2017, month=3, day=14))
+
+retrieved_day = models.Day.get_day(datetime.datetime(year=2017, month=3, day=14))
+
+for hr in retrieved_day.heart_rate_samples:
+	print("{} {}".format(hr.time, hr.value))
 
 

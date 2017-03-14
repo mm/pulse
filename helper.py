@@ -1,4 +1,5 @@
 import models
+import datetime
 
 class Rainbow(object):
     """Literally just makes terminal output pretty."""
@@ -13,10 +14,11 @@ class Rainbow(object):
     underline = '\033[4m'
     endc = '\033[0m'
 
-class DatabaseHelper(object):
-    """Convenience methods for our database. Should probably be in models.py, but not tonight."""
-    
+class Helper(object):
+
     @classmethod
-    def clear_token(cls, human):
-        human.access_token = ""
-        human.save()
+    def string_to_datetime(cls, string, type):
+        if type == 'time':
+            return datetime.datetime.strptime(string, '%H:%M:%S').time()
+        elif type == 'date':
+            return datetime.datetime.strptime(string, '%Y-%m-%d')
