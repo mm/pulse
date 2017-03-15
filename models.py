@@ -14,6 +14,9 @@ class Human(Model):
 	def get_recorded_days(self):
 		return Day.select().where(Day.human == self)
 
+	def __str__(self):
+		return "Human: {}".format(self.name)
+
 	class Meta:
 		database=DATABASE
 
@@ -48,6 +51,12 @@ class Day(Model):
 
 	def get_heart_rate_data(self):
 		return HeartRate.select().where(HeartRate.day == self)
+
+	def __str__(self):
+		return "{}\n Resting Heart Rate: {}\n Heart Rate Samples: {}".format(
+			datetime.datetime.strftime(self.date, '%B %d, %Y'),
+			self.resting_hr,
+			self.get_heart_rate_data().count())
 
 	class Meta:
 		database = DATABASE

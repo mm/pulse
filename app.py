@@ -39,29 +39,29 @@ def sync_day_to_database(date=datetime.datetime.now()):
 	# Retrieve the day we added, and we'll associate this with heart rates later on.
 	retr = (models.Day.select().where(models.Day.date == date_to_pass)).get()
 
-	import_or_update_rates(retr, intraday)
+	import_heart_rates(retr, intraday)
 
-def import_or_update_rates(day, intraday_summary):
+def import_heart_rates(day, intraday_summary):
 
+	# First, run through the intraday series Fitbit gives us, associating it with our day, and playing with the dates a tad.
 	for sample in intraday_summary:
 			sample['time'] = datetime.datetime.combine(day.date, Helper.string_to_datetime(sample['time'], 'time'))
 			sample['day'] = day
 
+	# Now check to see if we have heart rate data already for that day.
 	if day.heart_rate_samples.count() == 0:
-		print("No heart rate samples, currently. Importing all of them.")
+		# We have no data yet, so we import everything
 		models.HeartRate.import_rates(day, intraday_summary)
 	else:
-		print("We already have some heart rate values in place. Excluding some from our dataset.")
+		# We have some data already, so we trim down the list of data we're about to insert based on
+		# what we have in the database already.
 		exclusions = [hr.time for hr in day.heart_rate_samples]
 		delta = list(filter(lambda x: x['time'] not in exclusions, intraday_summary))
-
 		models.HeartRate.import_rates(day, delta)
 
-# sync_day_to_database(date=datetime.datetime(year=2017, month=3, day=14))
+all_days = human.get_recorded_days()
 
-retrieved_day = models.Day.get_day(datetime.datetime(year=2017, month=3, day=14))
-
-for hr in retrieved_day.heart_rate_samples:
-	print("{} {}".format(hr.time, hr.value))
+for day in all_days:
+	print(day)
 
 

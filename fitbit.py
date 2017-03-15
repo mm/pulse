@@ -18,7 +18,7 @@ class FitbitClient(object):
 
 		"""
 		
-		print((Rainbow.purple+"Access token passed in: {}"+Rainbow.endc).format(token['access_token']))
+		# print((Rainbow.purple+"Access token passed in: {}"+Rainbow.endc).format(token['access_token']))
 
 		if token['access_token'] == "":
 			# We need to fetch a token for the user.
@@ -50,7 +50,7 @@ class FitbitClient(object):
 	def fetch_heartrate_detailed_day(self, date=datetime.date.today(), detail='1min'):
 		"""Implementation of: https://dev.fitbit.com/docs/heart-rate/#get-heart-rate-intraday-time-series
 
-		Note: Your application needs to be of the 'Personal' type in order to access this.
+		Note: Application needs to be of the 'Personal' type in order to access this.
 		By default, this will fetch intraday series data for the current day, with a detail level of 1 min, for the entire day.
 		You can pass '1sec' or '1min' to the detail argument."""
 
@@ -59,10 +59,6 @@ class FitbitClient(object):
 			raise InputError
 			
 		date_to_pass = date.strftime('%Y-%m-%d')
-		# time_start = start.strftime('%H:%M')
-		# time_end = end.strftime('%H:%M')
-
-		# print("Parameters: {} {} {} {}".format(date_to_pass, detail, time_start, time_end))
 
 		request = self.fitbit.get('https://api.fitbit.com/1/user/-/activities/heart/date/{}/1d/{}.json'.format(date_to_pass, detail))
 
