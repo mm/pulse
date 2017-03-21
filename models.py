@@ -11,6 +11,10 @@ class Human(Model):
 		self.access_token = ""
 		self.save()
 
+	def update_access_token(self, token):
+		self.access_token = token
+		self.save()
+
 	def get_recorded_days(self):
 		return Day.select().where(Day.human == self)
 

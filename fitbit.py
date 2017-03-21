@@ -73,7 +73,14 @@ class FitbitClient(object):
 			return summary, intraday_series
 
 		except ValueError:
-			print("Response wasn't valid JSON.")
+			print(Rainbow.red+"Response wasn't valid JSON."+Rainbow.endc)
+		except KeyError as ke:
+			print(Rainbow.red+"{} could not be found in Fitbit's response dictionary.".format(ke)+Rainbow.endc)
+
+			
+
+
+
 
 
 		
