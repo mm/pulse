@@ -62,20 +62,25 @@ class FitbitClient(object):
 
 		request = self.fitbit.get('https://api.fitbit.com/1/user/-/activities/heart/date/{}/1d/{}.json'.format(date_to_pass, detail))
 
-		try:
-			response_dictionary = request.json()
+		if request.status_code == 200:
+			print(Rainbow.darkcyan+"Rate Limiting: {Fitbit-Rate-Limit-Remaining}/{Fitbit-Rate-Limit-Limit} API calls remaining. Limits reset in {Fitbit-Rate-Limit-Reset} seconds.".format(**request.headers)+Rainbow.endc)
 
-			summary = {'date': response_dictionary['activities-heart'][0]['dateTime'],
-						'resting_rate': response_dictionary['activities-heart'][0]['value']['restingHeartRate']}
+			try:
+				response_dictionary = request.json()
 
-			intraday_series = response_dictionary['activities-heart-intraday']['dataset']
+				summary = {'date': response_dictionary['activities-heart'][0]['dateTime'],
+							'resting_rate': response_dictionary['activities-heart'][0]['value']['restingHeartRate']}
 
-			return summary, intraday_series
+				intraday_series = response_dictionary['activities-heart-intraday']['dataset']
 
-		except ValueError:
-			print(Rainbow.red+"Response wasn't valid JSON."+Rainbow.endc)
-		except KeyError as ke:
-			print(Rainbow.red+"{} could not be found in Fitbit's response dictionary.".format(ke)+Rainbow.endc)
+				return summary, intraday_series
+
+			except ValueError:
+				print(Rainbow.red+"Response wasn't valid JSON."+Rainbow.endc)
+			except KeyError as ke:
+				print(Rainbow.red+"{} could not be found in Fitbit's response dictionary.".format(ke)+Rainbow.endc)
+				if 'restingHeartRate' in ke.args:
+					raise exceptions.ImportingError("No resting HR data found for {}. The day may be too new.".format(date_to_pass))
 
 			
 
