@@ -27,10 +27,10 @@ class Human(Model):
 class Day(Model):
 	human = ForeignKeyField(Human, related_name='day_summary')
 	date = DateField(default=datetime.date.today, unique=True)
-	resting_hr = IntegerField()
+	resting_hr = IntegerField(default=0)
 
 	@classmethod
-	def create_day(cls, human, date, resting_rate):
+	def create_day(cls, human, date, resting_rate=0):
 		try:
 			with DATABASE.atomic():
 				cls.create(
@@ -41,13 +41,9 @@ class Day(Model):
 		except IntegrityError:
 			print("Day already exists.")
 
-	def update_day(self, **changes):
-		try:
-			for key, value in changes:
-				setattr(self, key, value)
-			self.save()
-		except ValueError:
-			pass
+	def update_resting_hr(self, resting_rate):
+		self.resting_hr = resting_rate
+		self.save()
 
 	@classmethod
 	def get_day(cls, date=datetime.datetime.today()):

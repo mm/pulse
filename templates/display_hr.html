@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+
+{% block title %}Heart Rate Data for {{ retrieved_day.date.strftime('%b %d, %Y') }} {% endblock %}
+
+{% block content %}
+
+	<h1>Heart Rate Data: {{ retrieved_day.date.strftime('%b %d, %Y') }}</h1>
+	<p>Resting Heart Rate: {{ retrieved_day.resting_hr }}</p>
+
+{% endblock %}

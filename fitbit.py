@@ -68,8 +68,13 @@ class FitbitClient(object):
 			try:
 				response_dictionary = request.json()
 
+				try:
+					resting_hr = response_dictionary['activities-heart'][0]['value']['restingHeartRate']
+				except KeyError:
+					resting_hr = 0
+
 				summary = {'date': response_dictionary['activities-heart'][0]['dateTime'],
-							'resting_rate': response_dictionary['activities-heart'][0]['value']['restingHeartRate']}
+							'resting_rate': resting_hr}
 
 				intraday_series = response_dictionary['activities-heart-intraday']['dataset']
 
@@ -79,8 +84,6 @@ class FitbitClient(object):
 				print(Rainbow.red+"Response wasn't valid JSON."+Rainbow.endc)
 			except KeyError as ke:
 				print(Rainbow.red+"{} could not be found in Fitbit's response dictionary.".format(ke)+Rainbow.endc)
-				if 'restingHeartRate' in ke.args:
-					raise exceptions.ImportingError("No resting HR data found for {}. The day may be too new.".format(date_to_pass))
 
 			
 

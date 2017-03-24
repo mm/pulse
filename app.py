@@ -24,6 +24,11 @@ def sync_day_to_database(date=datetime.datetime.now()):
 		# Retrieve the day we added, and we'll associate this with heart rates later on.
 		retr = (models.Day.select().where(models.Day.date == date_to_pass)).get()
 
+		# Update resting heart rate for that day, if one wasn't available previously.
+		if retr.resting_hr != summ['resting_rate']:
+			retr.resting_hr = summ['resting_rate']
+			retr.save()
+
 		import_heart_rates(retr, intraday)
 
 	except (exceptions.InputError, exceptions.ImportingError, ValueError) as e:
@@ -49,8 +54,18 @@ def import_heart_rates(day, intraday_summary):
 
 @app.route("/")
 def index():
-	retrieved_day = models.Day.get_day(datetime.datetime(year=2017, month=3, day=21))
-	return "Hello! Info for yesterday: {}".format(retrieved_day.resting_hr)
+	return "ayyyyyyyyy"
+
+@app.route("/hr/<int:year>/<int:month>/<int:day>")
+def display_hr_data(year, month, day):
+	try:
+		retrieved_day = models.Day.get_day(datetime.datetime(year=year, month=month, day=day))
+	except:
+		sync_day_to_database(datetime.datetime(year=year, month=month, day=day))
+		retrieved_day = models.Day.get_day(datetime.datetime(year=year, month=month, day=day))
+
+	return render_template('display_hr.html', retrieved_day=retrieved_day)
+
 
 if __name__ == '__main__':
 	models.initialize()
