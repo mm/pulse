@@ -5,6 +5,12 @@
 {% block content %}
 
 	<h1>Heart Rate Data: {{ retrieved_day.date.strftime('%b %d, %Y') }}</h1>
+	{% if retrieved_day.resting_hr != 0 %}
 	<p>Resting Heart Rate: {{ retrieved_day.resting_hr }}</p>
+	{% else %}
+	<p>Not enough data available for a resting heart rate yet.</p>
+	{% endif %}
+
+	<a href="{{ url_for('sync_hr_data', year=retrieved_day.date.year, month=retrieved_day.date.month, day=retrieved_day.date.day) }}">Sync with Fitbit</a>
 
 {% endblock %}

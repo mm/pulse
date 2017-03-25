@@ -1,6 +1,6 @@
 from fitbit import FitbitClient
 from helper import Rainbow, Helper
-from flask import Flask, render_template, flash, url_for
+from flask import Flask, render_template, flash, url_for, redirect, g
 import models, exceptions
 import requests
 import os, datetime
@@ -11,6 +11,19 @@ PORT = 8000
 HOST = '0.0.0.0'
 
 app = Flask(__name__)
+app.secret_key = os.environ["PULSE_KEY"]
+
+@app.before_request
+def before_request():
+	"""Connect to database before each request."""
+	g.db = models.DATABASE
+	g.db.connect()
+
+@app.after_request
+def after_request(response):
+	"""Close database connection afterwards."""
+	g.db.close()
+	return response
 
 def sync_day_to_database(date=datetime.datetime.now()):
 	# Grab a summary of the day, with heart rate data, from Fitbit
@@ -50,6 +63,7 @@ def import_heart_rates(day, intraday_summary):
 		# what we have in the database already.
 		exclusions = [hr.time for hr in day.heart_rate_samples]
 		delta = list(filter(lambda x: x['time'] not in exclusions, intraday_summary))
+		print("About to add {} new heart rates.".format(len(delta)))
 		models.HeartRate.import_rates(day, delta)
 
 @app.route("/")
@@ -65,6 +79,18 @@ def display_hr_data(year, month, day):
 		retrieved_day = models.Day.get_day(datetime.datetime(year=year, month=month, day=day))
 
 	return render_template('display_hr.html', retrieved_day=retrieved_day)
+
+@app.route("/hr/<int:year>/<int:month>/<int:day>/sync")
+def sync_hr_data(year, month, day):
+	print("{} {} {} passed".format(year, month, day))
+	if year and month and day:
+		try:
+			sync_day_to_database(datetime.datetime(year=year, month=month, day=day))
+		except:
+			flash("Could not sync to Fitbit.", 'error')
+		return redirect(url_for('display_hr_data', year=year, month=month, day=day))	
+	else:
+		return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
