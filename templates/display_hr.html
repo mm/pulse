@@ -13,4 +13,12 @@
 
 	<a href="{{ url_for('sync_hr_data', year=retrieved_day.date.year, month=retrieved_day.date.month, day=retrieved_day.date.day) }}">Sync with Fitbit</a>
 
+	<ul>
+	{% for hr in retrieved_day.get_heart_rate_data() %}
+		<li>{{ hr.time }}: {{ hr.value }}</li>
+	{% endfor %}
+	</ul>
+
+
+
 {% endblock %}

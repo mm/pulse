@@ -25,7 +25,7 @@ def after_request(response):
 	g.db.close()
 	return response
 
-def sync_day_to_database(date=datetime.datetime.now()):
+def sync_day_to_database(date=datetime.datetime.today()):
 	# Grab a summary of the day, with heart rate data, from Fitbit
 	try:
 		summ, intraday = fitbit_client.fetch_heartrate_detailed_day(date=date)
@@ -68,7 +68,8 @@ def import_heart_rates(day, intraday_summary):
 
 @app.route("/")
 def index():
-	return "ayyyyyyyyy"
+	today = datetime.datetime.today()
+	return redirect(url_for('display_hr_data', year=today.year, month=today.month, day=today.day))
 
 @app.route("/hr/<int:year>/<int:month>/<int:day>")
 def display_hr_data(year, month, day):
@@ -80,9 +81,8 @@ def display_hr_data(year, month, day):
 
 	return render_template('display_hr.html', retrieved_day=retrieved_day)
 
-@app.route("/hr/<int:year>/<int:month>/<int:day>/sync")
+@app.route("/hr/sync/<int:year>/<int:month>/<int:day>")
 def sync_hr_data(year, month, day):
-	print("{} {} {} passed".format(year, month, day))
 	if year and month and day:
 		try:
 			sync_day_to_database(datetime.datetime(year=year, month=month, day=day))
