@@ -1,4 +1,3 @@
-import models
 import datetime
 
 class Rainbow(object):
@@ -21,4 +20,4 @@ class Helper(object):
         if type == 'time':
             return datetime.datetime.strptime(string, '%H:%M:%S').time()
         elif type == 'date':
-            return datetime.datetime.strptime(string, '%Y-%m-%d')
+            return datetime.datetime.strptime(string, '%Y-%m-%d').date()

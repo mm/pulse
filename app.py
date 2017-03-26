@@ -3,7 +3,7 @@ from helper import Rainbow, Helper
 from flask import Flask, render_template, flash, url_for, redirect, g
 import models, exceptions
 import requests
-import os, datetime
+import os, sys, datetime
 
 client_id = os.environ["FITBIT_CLIENT_ID"]
 DEBUG = True
@@ -25,22 +25,26 @@ def after_request(response):
 	g.db.close()
 	return response
 
-def sync_day_to_database(date=datetime.datetime.today()):
+@app.teardown_request
+def teardown_request(exception):
+	if exception:
+		print(exception)
+	db = getattr(g, 'db', None)
+	if db is not None:
+		db.close()
+
+def sync_day_to_database(date=datetime.date.today()):
 	# Grab a summary of the day, with heart rate data, from Fitbit
 	try:
 		summ, intraday = fitbit_client.fetch_heartrate_detailed_day(date=date)
 
-		# Add a new day to our database
+		# Add a new day to our database (or retrieve it)
 		date_to_pass = Helper.string_to_datetime(summ['date'], 'date')
-		models.Day.create_day(human, date_to_pass, summ['resting_rate'])
-
-		# Retrieve the day we added, and we'll associate this with heart rates later on.
-		retr = (models.Day.select().where(models.Day.date == date_to_pass)).get()
+		retr = models.Day.create_day(human, date_to_pass)
 
 		# Update resting heart rate for that day, if one wasn't available previously.
 		if retr.resting_hr != summ['resting_rate']:
-			retr.resting_hr = summ['resting_rate']
-			retr.save()
+			retr.update_resting_hr(summ['resting_rate'])
 
 		import_heart_rates(retr, intraday)
 
@@ -68,16 +72,16 @@ def import_heart_rates(day, intraday_summary):
 
 @app.route("/")
 def index():
-	today = datetime.datetime.today()
+	today = datetime.date.today()
 	return redirect(url_for('display_hr_data', year=today.year, month=today.month, day=today.day))
 
 @app.route("/hr/<int:year>/<int:month>/<int:day>")
 def display_hr_data(year, month, day):
 	try:
-		retrieved_day = models.Day.get_day(datetime.datetime(year=year, month=month, day=day))
+		retrieved_day = models.Day.get_day(datetime.date(year=year, month=month, day=day))
 	except:
-		sync_day_to_database(datetime.datetime(year=year, month=month, day=day))
-		retrieved_day = models.Day.get_day(datetime.datetime(year=year, month=month, day=day))
+		sync_day_to_database(datetime.date(year=year, month=month, day=day))
+		retrieved_day = models.Day.get_day(datetime.date(year=year, month=month, day=day))
 
 	return render_template('display_hr.html', retrieved_day=retrieved_day)
 
@@ -85,8 +89,9 @@ def display_hr_data(year, month, day):
 def sync_hr_data(year, month, day):
 	if year and month and day:
 		try:
-			sync_day_to_database(datetime.datetime(year=year, month=month, day=day))
-		except:
+			sync_day_to_database(datetime.date(year=year, month=month, day=day))
+		except Exception as e:
+			print("{} Unexpected error: {}{}".format(Rainbow.red, e, Rainbow.endc))
 			flash("Could not sync to Fitbit.", 'error')
 		return redirect(url_for('display_hr_data', year=year, month=month, day=day))	
 	else:

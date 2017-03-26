@@ -1,4 +1,5 @@
 from peewee import *
+from helper import Rainbow, Helper
 import datetime
 
 DATABASE = SqliteDatabase('fitbitdata.db')
@@ -30,23 +31,23 @@ class Day(Model):
 	resting_hr = IntegerField(default=0)
 
 	@classmethod
-	def create_day(cls, human, date, resting_rate=0):
+	def create_day(cls, human, date):
 		try:
 			with DATABASE.atomic():
-				cls.create(
+				return cls.create(
 					human=human,
 					date=date,
-					resting_hr=resting_rate
 				)
 		except IntegrityError:
-			print("Day already exists.")
+			print("{}Note: A day with date {} exists in the database already.{}".format(Rainbow.yellow, date, Rainbow.endc))
+			return cls.get(cls.date == date)
 
 	def update_resting_hr(self, resting_rate):
 		self.resting_hr = resting_rate
 		self.save()
 
 	@classmethod
-	def get_day(cls, date=datetime.datetime.today()):
+	def get_day(cls, date=datetime.date.today()):
 		return (Day.select().where(Day.date == date)).get()
 
 	def get_heart_rate_data(self):
