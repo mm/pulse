@@ -4,12 +4,14 @@
 
 {% block content %}
 
-	<h1>Heart Rate Data: {{ retrieved_day.date.strftime('%b %d, %Y') }}</h1>
-	{% if retrieved_day.resting_hr != 0 %}
-	<p>Resting Heart Rate: {{ retrieved_day.resting_hr }}</p>
-	{% else %}
-	<p>Not enough data available for a resting heart rate yet.</p>
-	{% endif %}
+	<div class="day_resting_hr_summary">
+		<h1>{{ retrieved_day.date.strftime('%b %d, %Y').upper()}}</h1>
+		{% if retrieved_day.resting_hr != 0 %}
+			<div class="resting_hr"><i class="fa fa-heartbeat"></i> Resting: {{ retrieved_day.resting_hr }} bpm</div>
+		{% else %}
+			<div class="resting_hr"><i class="fa fa-heartbeat"></i> Resting: Unavailable</div>
+		{% endif %}
+	</div>
 
 	<a href="{{ url_for('sync_hr_data', year=retrieved_day.date.year, month=retrieved_day.date.month, day=retrieved_day.date.day) }}">Sync with Fitbit</a>
 
