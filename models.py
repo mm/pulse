@@ -1,6 +1,6 @@
 from peewee import *
 from helper import Rainbow, Helper
-import datetime
+import datetime, json
 
 DATABASE = SqliteDatabase('fitbitdata.db')
 
@@ -52,6 +52,18 @@ class Day(Model):
 
 	def get_heart_rate_data(self):
 		return HeartRate.select().where(HeartRate.day == self)
+
+	def prepare_hr_data_graph(self):
+		# Not the most efficient thing in the world just yet.
+		format_string = '%H:%M'
+		graph_data = []
+
+		# Let x be time, y be the heart rate itself
+
+		for hr in self.heart_rate_samples:
+			graph_data.append({'x': hr.time.strftime(format_string), 'y': hr.value})
+
+		return json.dumps(graph_data)
 
 	def __str__(self):
 		return "{}\n Resting Heart Rate: {}\n Heart Rate Samples: {}".format(

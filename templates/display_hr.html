@@ -6,21 +6,47 @@
 
 	<div class="day_resting_hr_summary">
 		<h1>{{ retrieved_day.date.strftime('%b %d, %Y').upper()}}</h1>
+		<div class="resting_hr">
 		{% if retrieved_day.resting_hr != 0 %}
-			<div class="resting_hr"><i class="fa fa-heartbeat"></i> Resting: {{ retrieved_day.resting_hr }} bpm</div>
+			<i class="fa fa-heartbeat"></i> Resting: {{ retrieved_day.resting_hr }} bpm
 		{% else %}
-			<div class="resting_hr"><i class="fa fa-heartbeat"></i> Resting: Unavailable</div>
+			<i class="fa fa-heartbeat"></i> Resting: Unavailable
 		{% endif %}
+		| <i class="fa fa-refresh"></i> <a href="{{ url_for('sync_hr_data', year=retrieved_day.date.year, month=retrieved_day.date.month, day=retrieved_day.date.day) }}">Sync</a>
+		</div>
 	</div>
+	
+	<canvas id="hr_chart"></canvas>
 
-	<a href="{{ url_for('sync_hr_data', year=retrieved_day.date.year, month=retrieved_day.date.month, day=retrieved_day.date.day) }}">Sync with Fitbit</a>
-
-	<ul>
-	{% for hr in retrieved_day.get_heart_rate_data() %}
-		<li>{{ hr.time }}: {{ hr.value }}</li>
-	{% endfor %}
-	</ul>
-
-
+<script>
+var ctx = document.getElementById("hr_chart");
+var heartRateChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        datasets: [{
+            label: 'Heart Rate (bpm)',
+            data: {{ retrieved_day.prepare_hr_data_graph()|safe }},
+            backgroundColor: 'hsla(10, 65%, 40%, 1)',
+            borderColor: 'hsla(10, 45%, 40%, 1)',
+            fill: false,
+        }]
+    },
+    options: {
+        scales: {
+            xAxes: [{
+                type: 'time',
+                position: 'bottom',
+                unit: 'minute',
+                time: {
+                	parser: 'h:mm',
+                	displayFormats: {
+                		'minute': 'h:mm a'
+                	}
+                }
+            }]
+        }
+    }
+});
+</script>
 
 {% endblock %}

@@ -16,6 +16,12 @@ html, body {
 h1 { font-size: 3em; font-weight: 700; }
 h2 { font-size: 2em; font-weight: 700; }
 h3 { font-size: 1.5em; font-weight: 400; }
+a { 
+	color: hsla(10, 65%, 95%, 1); 
+	border-bottom: 0.1em dashed; 
+	padding-bottom: 0.2em;
+	text-decoration: none;
+}
 
 .day_resting_hr_summary {
 	text-align: center;
@@ -30,3 +36,8 @@ h3 { font-size: 1.5em; font-weight: 400; }
 }
 
 .resting_hr i {  }
+
+#hr_chart {
+	margin-top: 1em;
+	background-color: #14444a;
+}
