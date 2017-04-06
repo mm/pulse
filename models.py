@@ -9,14 +9,17 @@ class Human(Model):
 	access_token = CharField(max_length=512, unique=True)
 
 	def clear_token(self):
+		"""Clears the OAuth access token."""
 		self.access_token = ""
 		self.save()
 
 	def update_access_token(self, token):
+		"""Updates the OAuth access token and saves it."""
 		self.access_token = token
 		self.save()
 
 	def get_recorded_days(self):
+		"""Returns a query selecting all days where heart rate data has been synced."""
 		return Day.select().where(Day.human == self)
 
 	def __str__(self):
@@ -32,6 +35,12 @@ class Day(Model):
 
 	@classmethod
 	def create_day(cls, human, date):
+		"""Attempts to create a Day object with a specified date. If one exists already, it is returned instead.
+		
+		Arguments:
+		human -- The Human object that will be associated with this Day.
+		date -- A datetime.date object representing the date associated with this Day.
+		"""
 		try:
 			with DATABASE.atomic():
 				return cls.create(
@@ -43,18 +52,21 @@ class Day(Model):
 			return cls.get(cls.date == date)
 
 	def update_resting_hr(self, resting_rate):
+		"""Updates and saves the resting heart rate for a given day."""
 		self.resting_hr = resting_rate
 		self.save()
 
 	@classmethod
 	def get_day(cls, date=datetime.date.today()):
+		"""Returns a given Day object. Pass in a datetime.date object. By default, it selects today's date."""
 		return (Day.select().where(Day.date == date)).get()
 
 	def get_heart_rate_data(self):
+		"""Returns a query for associated heart rate data for a given Day object."""
 		return HeartRate.select().where(HeartRate.day == self)
 
 	def prepare_hr_data_graph(self):
-		# Not the most efficient thing in the world just yet.
+		"""Returns JSON data with a time series of heart rate data, meant to be used for graphing."""
 		format_string = '%H:%M'
 		graph_data = []
 
@@ -82,6 +94,14 @@ class HeartRate(Model):
 
 	@classmethod
 	def import_rates(cls, day_to_assign, bulk):
+		"""Imports a list of heart rates, creating many HeartRate objects at once. The lists:
+
+		- Should be lists of dictionaries, containing three keys: 'time', 'day' and 'value'
+		- 'time' should be associated with a datetime.datetime object
+		- 'day' should be the associated Day object for the heart rate
+		- 'value' should be an integer representing the heart rate
+		"""
+
 		with DATABASE.atomic():
 			for data_dict in bulk:
 				cls.create(**data_dict)
@@ -95,5 +115,6 @@ def initialize():
 	DATABASE.close()
 
 def reset_days():
+	"""Drops all Day and HeartRate tables immediately. Useful for debugging."""
 	DATABASE.drop_tables([Day, HeartRate])
 	print("Day and heart rate tables dropped.")

@@ -20,6 +20,7 @@
 
 <script>
 var ctx = document.getElementById("hr_chart");
+Chart.defaults.global.defaultFontColor='hsla(206, 65%, 95%, 1)';
 var heartRateChart = new Chart(ctx, {
     type: 'line',
     data: {
@@ -28,6 +29,7 @@ var heartRateChart = new Chart(ctx, {
             data: {{ retrieved_day.prepare_hr_data_graph()|safe }},
             backgroundColor: 'hsla(10, 65%, 40%, 1)',
             borderColor: 'hsla(10, 45%, 40%, 1)',
+            borderJoinStyle: 'round',
             fill: false,
         }]
     },
@@ -42,7 +44,7 @@ var heartRateChart = new Chart(ctx, {
                 	displayFormats: {
                 		'minute': 'h:mm a'
                 	}
-                }
+                },
             }]
         }
     }

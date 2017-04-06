@@ -6,8 +6,8 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 /* Okay, now we're getting the party started */
 
 html, body {
-	background-color: hsla(10, 65%, 40%, 1);
-	color: hsla(10, 65%, 95%, 1);
+	background-color: hsl(206, 63%, 16%);
+	color: hsla(206, 65%, 95%, 1);
 	font-family: 'Open Sans', sans-serif;
 	font-size: 16px;
 	font-weight: 400;
@@ -17,7 +17,7 @@ h1 { font-size: 3em; font-weight: 700; }
 h2 { font-size: 2em; font-weight: 700; }
 h3 { font-size: 1.5em; font-weight: 400; }
 a { 
-	color: hsla(10, 65%, 95%, 1); 
+	color: hsla(206, 65%, 95%, 1);
 	border-bottom: 0.1em dashed; 
 	padding-bottom: 0.2em;
 	text-decoration: none;
@@ -39,5 +39,5 @@ a {
 
 #hr_chart {
 	margin-top: 1em;
-	background-color: #14444a;
+	background-color: hsl(206, 63%, 16%)e;
 }
