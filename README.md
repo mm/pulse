@@ -11,6 +11,7 @@ Just a little learning experiment for me to learn how to use OAuth 2, Python & t
 * [requests-oauthlib](https://pypi.python.org/pypi/requests-oauthlib/0.8.0)
 * [peewee](https://pypi.python.org/pypi/peewee/2.8.7)
 * [Flask](http://flask.pocoo.org)
+* [Chart.js](http://www.chartjs.org) for the beautiful graphs
 
 ## Trying it out:
 
