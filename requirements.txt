@@ -1,0 +1,10 @@
+click==6.7
+Flask==0.12
+itsdangerous==0.24
+Jinja2==2.9.5
+MarkupSafe==1.0
+oauthlib==2.0.1
+peewee==2.8.7
+requests==2.13.0
+requests-oauthlib==0.8.0
+Werkzeug==0.12.1

@@ -3,7 +3,6 @@ import requests
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import MobileApplicationClient
 from helper import Rainbow
-import exceptions
 
 import datetime
 
@@ -15,25 +14,22 @@ class FitbitClient(object):
 		
 		Note: The OAuth code is based off a modified version of the example in this issue: https://github.com/requests/requests-oauthlib/issues/104
 		(thank you!)
-
 		"""
-		
-		# print((Rainbow.purple+"Access token passed in: {}"+Rainbow.endc).format(token['access_token']))
 
 		if token['access_token'] == "":
 			# We need to fetch a token for the user.
-			print("Note: no token was passed in.")
+			print("Note: looks like we don't have an access token yet. Let's fetch one.")
 
 			self.client = MobileApplicationClient(client_id)
 			self.fitbit = OAuth2Session(client_id, client=self.client, scope=scope)
 
 			authorization_base_url = "https://www.fitbit.com/oauth2/authorize"
 
-			authorization_url, state = self.fitbit.authorization_url(authorization_base_url, access_type="offline", approval_prompt="force")
+			authorization_url, state = self.fitbit.authorization_url(authorization_base_url)
 
-			print("Authorization URL: {}".format(authorization_url))
+			print("Please go to the following authorization URL: {}".format(authorization_url))
 
-			raw_callback_url = input("Paste callback here: ")
+			raw_callback_url = input("Paste callback URL you get back here: ")
 
 			self.fitbit.token_from_fragment(raw_callback_url)
 			self.token = self.fitbit.token['access_token']
@@ -71,6 +67,7 @@ class FitbitClient(object):
 				try:
 					resting_hr = response_dictionary['activities-heart'][0]['value']['restingHeartRate']
 				except KeyError:
+					# The views of our app will interpret this as 'Fitbit hasn't given an RHR yet', which is true.
 					resting_hr = 0
 
 				summary = {'date': response_dictionary['activities-heart'][0]['dateTime'],
