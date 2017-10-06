@@ -15,7 +15,7 @@ Just a little learning experiment for me to learn how to use OAuth 2, Python & t
 
 ## Trying it out:
 
-Register an app over at [Fitbit](https://dev.fitbit.com). Make sure you set the 'OAuth 2.0 Application Type' to 'Personal'. The callback URL can be whatever you want if you're planning on just running this locally (it's hella not secure enough to actually throw onto a production server) Make note of your client ID. 
+Register an app over at [Fitbit](https://dev.fitbit.com). Make sure you set the 'OAuth 2.0 Application Type' to 'Personal'. The callback URL can be whatever you want if you're planning on just running this locally (it's not secure enough to actually run on a production server -- access tokens are stored as plaintext and the authorization flow is not appropriate for anything other than running it locally) Make note of your client ID. 
 
 Get all the dependencies downloaded:
 
