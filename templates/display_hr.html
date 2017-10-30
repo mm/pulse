@@ -31,8 +31,12 @@ var heartRateChart = new Chart(ctx, {
             data: {{ retrieved_day.prepare_hr_data_graph()|safe }},
             backgroundColor: 'hsla(10, 65%, 40%, 1)',
             borderColor: 'hsla(10, 45%, 40%, 1)',
+            borderCapStyle: 'butt',
             borderJoinStyle: 'round',
             fill: false,
+            pointRadius: 0,
+            pointHitRadius: 3,
+            // showLine: false,
         }]
     },
     options: {
@@ -45,7 +49,7 @@ var heartRateChart = new Chart(ctx, {
                 time: {
                     unit: 'hour',
                     displayFormats: {
-                        hour: 'hA'
+                        hour: 'h A'
                     },
                 	parser: 'hh:mm'
                 },
