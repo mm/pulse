@@ -112,7 +112,7 @@ def sync_hr_data(year, month, day):
 
 if __name__ == '__main__':
 	models.initialize()
-
+	
 	# See if I exist yet... Create me if I don't.
 	human, created = models.Human.get_or_create(name = fullname, defaults={'access_token': ''})
 

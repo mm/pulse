@@ -6,7 +6,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 /* Okay, now we're getting the party started */
 
 html, body {
-	background-color: hsl(206, 63%, 16%);
+	background-color: hsl(100, 100%, 100%);
 	color: hsla(206, 65%, 95%, 1);
 	font-family: 'Open Sans', sans-serif;
 	font-size: 16px;
@@ -34,8 +34,6 @@ a {
 	font-size: 1.2em;
 	text-transform: uppercase;
 }
-
-.resting_hr i {  }
 
 #hr_chart {
 	margin-top: 1em;
