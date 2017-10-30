@@ -16,7 +16,9 @@
 		</div>
 	</div>
 	
-	<canvas id="hr_chart"></canvas>
+    <div class="chart-container">
+	   <canvas id="hr_chart"></canvas>
+    </div>
 
 <script>
 var ctx = document.getElementById("hr_chart");
@@ -40,12 +42,16 @@ var heartRateChart = new Chart(ctx, {
                 position: 'bottom',
                 unit: 'minute',
                 time: {
-                	parser: 'h:mm',
-                	displayFormats: {
-                		'minute': 'h:mm a'
-                	}
+                    unit: 'hour',
+                    displayFormats: {
+                        hour: 'hA'
+                    },
+                	parser: 'hh:mm'
                 },
             }]
+        },
+        legend: {
+            display: false
         }
     }
 });
