@@ -39,6 +39,7 @@ var heartRateChart = new Chart(ctx, {
         scales: {
             xAxes: [{
                 type: 'time',
+                fontColor: '#fff',
                 position: 'bottom',
                 unit: 'minute',
                 time: {
@@ -51,7 +52,7 @@ var heartRateChart = new Chart(ctx, {
             }]
         },
         legend: {
-            display: false
+            display: true
         }
     }
 });
