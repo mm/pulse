@@ -6,7 +6,7 @@
 	<script src="https://use.fontawesome.com/67f2941260.js"></script>
 	<script src="{{ url_for('static', filename='Chart.bundle.min.js') }}"></script>
 	<link href="{{ url_for('static', filename='style.css') }}" type="text/css" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Arimo:400,700|Open+Sans:400,600" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400|Open+Sans:400,600" rel="stylesheet">
 </head>
 <body>
 
@@ -17,6 +17,17 @@
 			{% endfor %}
 		{% endif %}
 	{% endwith %}
+	<div class="top-bar">
+			<div class="date-overview">{{ retrieved_day.date.strftime('%B %d, %Y')}}</div>
+			<div class="resting-hr">
+			{% if retrieved_day.resting_hr != 0 %}
+				<i class="fa fa-heartbeat"></i> Resting: {{ retrieved_day.resting_hr }} bpm
+			{% else %}
+				<i class="fa fa-heartbeat"></i> Resting: Unavailable
+			{% endif %}
+			| <i class="fa fa-refresh"></i> <a href="{{ url_for('sync_hr_data', year=retrieved_day.date.year, month=retrieved_day.date.month, day=retrieved_day.date.day) }}">Sync</a>
+			</div>
+	</div>
 
 	{% block content %}{% endblock %}
 </body>
