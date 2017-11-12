@@ -23,8 +23,6 @@ html, body {
 
 a { 
 	color: hsla(206, 65%, 95%, 1);
-	border-bottom: 0.1em dashed; 
-	padding-bottom: 0.2em;
 	text-decoration: none;
 }
 
@@ -44,6 +42,11 @@ a {
 	margin-right: 5%;
 	margin-top: 1em;
 	font-weight: 300;
+}
+
+.resting-hr a {
+	border-bottom: 0.1em dashed; 
+	padding-bottom: 0.2em;
 }
 
 .chart-container {

@@ -7,6 +7,7 @@
 	<script src="{{ url_for('static', filename='Chart.bundle.min.js') }}"></script>
 	<link href="{{ url_for('static', filename='style.css') }}" type="text/css" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400|Open+Sans:400,600" rel="stylesheet">
+
 </head>
 <body>
 
@@ -17,8 +18,10 @@
 			{% endfor %}
 		{% endif %}
 	{% endwith %}
+
 	<div class="top-bar">
-			<div class="date-overview">{{ retrieved_day.date.strftime('%B %d, %Y')}}</div>
+			<div class="date-overview"><!--<a href="#"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>-->
+			 {{ retrieved_day.date.strftime('%B %d, %Y')}}<!--<a href="#" onclick="#"><i class="fa fa-chevron-right" aria-hidden="true"></i></a>--></div>
 			<div class="resting-hr">
 			{% if retrieved_day.resting_hr != 0 %}
 				<i class="fa fa-heartbeat"></i> Resting: {{ retrieved_day.resting_hr }} bpm
