@@ -1,6 +1,6 @@
 # Pulse
 
-![Pulse heart rate data display](https://i.imgur.com/FT4r1.png)
+![Pulse heart rate data display](https://i.imgur.com/Od2VE6c.png)
 
 Just a little learning experiment for me to learn how to use OAuth 2, Python & the Fitbit API (and how those all come together) Definitely not ready for production. Fitbit's [Charge 2](https://www.fitbit.com/en-ca/charge2) tracks heart rate all day. I just used their [intraday time series endpoint](https://dev.fitbit.com/docs/heart-rate/#get-heart-rate-intraday-time-series) to sync heart rate data between a database on my computer and their servers, and display it nicely on a little website. 
 
