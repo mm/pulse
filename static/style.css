@@ -6,33 +6,47 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 /* Okay, now we're getting the party started */
 
 html, body {
-	background-color: hsl(206, 63%, 16%);
+	background-color: hsl(230, 34%, 22%);
 	color: hsla(206, 65%, 95%, 1);
 	font-family: 'Open Sans', sans-serif;
 	font-size: 16px;
 	font-weight: 400;
 }
 
-h1 { font-size: 3em; font-weight: 700; }
-h2 { font-size: 2em; font-weight: 700; }
-h3 { font-size: 1.5em; font-weight: 400; }
+.top-bar {
+	display: block;
+	height: 3em;
+	background: hsl(230, 34%, 12%);
+	font-family: 'Montserrat';
+	font-weight: 400;
+}
+
 a { 
 	color: hsla(206, 65%, 95%, 1);
-	border-bottom: 0.1em dashed; 
-	padding-bottom: 0.2em;
 	text-decoration: none;
 }
 
-.day_resting_hr_summary {
-	text-align: center;
-	margin-top: 2em;
-	font-family: 'Arimo', sans-serif;
+
+.date-overview {
+	float: left;
+	display: inline-block;
+	margin-left: 5%;
+	margin-top: 0.5em;
+	font-size: 1.5em;
 }
 
-.resting_hr {
-	margin-top: 0.5em;
-	font-size: 1.2em;
+.resting-hr {
+	float: right;
+	display: inline-block;
 	text-transform: uppercase;
+	margin-right: 5%;
+	margin-top: 1em;
+	font-weight: 300;
+}
+
+.resting-hr a {
+	border-bottom: 0.1em dashed; 
+	padding-bottom: 0.2em;
 }
 
 .chart-container {

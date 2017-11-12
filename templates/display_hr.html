@@ -3,18 +3,6 @@
 {% block title %}Heart Rate Data for {{ retrieved_day.date.strftime('%b %d, %Y') }} {% endblock %}
 
 {% block content %}
-
-	<div class="day_resting_hr_summary">
-		<h1>{{ retrieved_day.date.strftime('%b %d, %Y').upper()}}</h1>
-		<div class="resting_hr">
-		{% if retrieved_day.resting_hr != 0 %}
-			<i class="fa fa-heartbeat"></i> Resting: {{ retrieved_day.resting_hr }} bpm
-		{% else %}
-			<i class="fa fa-heartbeat"></i> Resting: Unavailable
-		{% endif %}
-		| <i class="fa fa-refresh"></i> <a href="{{ url_for('sync_hr_data', year=retrieved_day.date.year, month=retrieved_day.date.month, day=retrieved_day.date.day) }}">Sync</a>
-		</div>
-	</div>
 	
     <div class="chart-container">
 	   <canvas id="hr_chart"></canvas>
@@ -35,8 +23,7 @@ var heartRateChart = new Chart(ctx, {
             borderJoinStyle: 'round',
             fill: false,
             pointRadius: 0,
-            pointHitRadius: 3,
-            // showLine: false,
+            pointHitRadius: 3
         }]
     },
     options: {
